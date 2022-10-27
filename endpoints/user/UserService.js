@@ -48,28 +48,30 @@ const getUserByID = (userID, callback) => {
 const createUser = (props, callback) => {
     const userID = props.userID
     const userObj = {userID: userID}
-    const userSaveHandler = (err, user) => {
-        if(err) {
-            console.log(`error while saving user: '${userID}' \n${err.message}`)
-            return callback(err, null)
-        }
-        else {
-            console.log(`saved user: '${userID}'`)
-            return callback(null, user)
-        }
-    }
-    const createUser = () => {
-        const user = new User({
-            userID: userID,
-            firstName: props.firstName,
-            lastName: props.lastName,
-            password: props.password,
-            isAdministrator: props.isAdministrator
-        })
-        
-        user.save(userSaveHandler)
-    }
     const findUserHandler = (err, user) => {
+        const createUser = () => {
+            const userSaveHandler = (err, user) => {
+                if(err) {
+                    console.log(`error while saving user: '${userID}' \n${err.message}`)
+                    return callback(err, null)
+                }
+                else {
+                    console.log(`saved user: '${userID}'`)
+                    return callback(null, user)
+                }
+            }
+
+            const user = new User({
+                userID: userID,
+                firstName: props.firstName,
+                lastName: props.lastName,
+                password: props.password,
+                isAdministrator: props.isAdministrator
+            })
+            
+            user.save(userSaveHandler)
+        }
+
         if(err) {
             return callback(err, null)
         }
@@ -94,27 +96,29 @@ const createUser = (props, callback) => {
 
 const updateUser = (userID, props, callback) => {
     const userObj = {userID: userID}
-    const saveUserHandler = (err, user) => {
-        if(err) {
-            console.log(`error updating user: '${userID}' \n${err}`)
-            return callback(err, null)
+    const findAndUpdateUserHandler = (err, user) => {
+        const updateAndSafeUser = (user) => {
+            const saveUserHandler = (err, user) => {
+                if(err) {
+                    console.log(`error updating user: '${userID}' \n${err}`)
+                    return callback(err, null)
+                }
+        
+                if(user) {
+                    console.log(`updated user '${userID}'`)
+                    return callback(null, user)
+                }
+                else {
+                    let msg = `could not save user: '${userID}' while updating`
+                    console.log(msg)
+                    return callback({message: msg}, null)
+                }
+            } 
+
+            Object.assign(user, props)
+            user.save(saveUserHandler)
         }
 
-        if(user) {
-            console.log(`updated user '${userID}'`)
-            return callback(null, user)
-        }
-        else {
-            let msg = `could not save user: '${userID}' while updating`
-            console.log(msg)
-            return callback({message: msg}, null)
-        }
-    } 
-    const updateAndSafeUser = (user) => {
-        Object.assign(user, props)
-        user.save(saveUserHandler)
-    }
-    const findAndUpdateUserHandler = (err, user) => {
         if(err) {
             console.log(err)
             return callback(err, null)
