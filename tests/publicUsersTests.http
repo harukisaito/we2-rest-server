@@ -1,0 +1,93 @@
+###
+GET http://localhost/api/publicUsers
+// Rufe alle User ab. Zu Beginn sollten keine User in der Datenbank sein. 
+###
+
+
+
+###
+POST http://localhost/api/publicUsers
+Content-Type: application/json
+
+{
+    "userID": "admin",
+    "firstName": "Udo",
+    "lastName": "Müller",
+    "password": "123",
+    "isAdministrator": true
+}
+// Lege ersten User an, der Administrator ist
+###
+
+###
+POST http://localhost/api/publicUsers
+Content-Type: application/json
+
+{
+    "userID": "manfred",
+    "firstName": "Susi",
+    "lastName": "Sunkist",
+    "password": "asdf"
+}
+// Lege zweiten User an. Prüfe UserID sowie den Namen, ob die Angaben korrekt sind.
+###
+
+###
+POST http://localhost/api/publicUsers
+Content-Type: application/json
+
+{
+    "firstName": "Susi",
+    "lastName": "Sunkist",
+    "password": "asdf"
+}
+// Lege zweiten User an. Prüfe UserID sowie den Namen, ob die Angaben korrekt sind.
+###
+
+
+
+###
+GET http://localhost/api/publicUsers/admin
+// Rufe den User mit UserID admin ab. 
+###
+
+###
+GET http://localhost/api/publicUsers/manfred
+// Rufe den User mit UserID admin ab. 
+###
+
+
+
+###
+PUT http://localhost/api/publicUsers/admin
+Content-Type: application/json
+
+{
+    "firstName": "Anna",
+    "lastName": "Brezel"
+}
+// Ändere beim zweiten User den User-Name. Zur Selektion des Users verwende die userID.
+### 
+
+###
+PUT http://localhost/api/publicUsers/manfred
+Content-Type: application/json
+
+{
+    "firstName": "Marina",
+    "lastName": "Sauerbier"
+}
+// Ändere beim zweiten User den User-Name. Zur Selektion des Users verwende die userID.
+### 
+
+
+
+###
+DELETE  http://localhost/api/publicUsers/admin
+// Lösche den User mit der User-ID manfred
+###
+
+###
+DELETE  http://localhost/api/publicUsers/manfred
+// Lösche den User mit der User-ID manfred
+###
