@@ -30,9 +30,8 @@ UserSchema.methods.comparePassword = function(candidatePassword, next) {
         if(err) {
             return next(err)
         }
-        else {
-            next(null, isMatch)
-        }
+
+        next(null, isMatch)
     })
 }
 

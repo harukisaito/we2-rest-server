@@ -1,87 +1,103 @@
 const express = require("express")
 const router = express.Router()
 
-const userService = require("./UserService")
+const userService = require("./UserService") 
 
 
 
-// get all users
-router.get("/", (req, res) => 
-{
-    const getAllUsersHandler = (err, result) => {
-        if(result) {
-            res.send(Object.values(result))
+//#region get all users 
+const getAllUsersHandler = (req, res) => {
+    const getAllUsersServiceHandler = (err, users) => {
+        if(!users) {
+            res.status(404).send({error: `error getting users \n${err.message}`})
+            return
         }
-        else {
-            res.status(404).send(`error getting users \n${err.message}`)
-        }
+
+        res.send(Object.values(users))
     }
 
-    userService.getUsers(getAllUsersHandler)
-})
+    userService.getUsers(getAllUsersServiceHandler)
+}
 
-// get user by id
-router.get("/:userID", (req, res) => 
-{
+router.get("/", getAllUsersHandler)
+//#endregion get all users
+
+
+//#region get user by id
+const getUserByIDHandler = (req, res) => {
     const userID = req.url.split('/')[1]
-    const getUserByIDHandler = (err, result) => {
-        if(result) {
-            res.send(result)
+    const getUserByIDServiceHandler = (err, user) => {
+        if(!user) {
+            res.status(404).send({error: `error getting user \n${err.message}`})
+            return
         }
-        else {
-            res.status(404).send(`error getting user \n${err.message}`)
-        }
+        
+        res.send(user)
     }
 
-    userService.getUserByID(userID, getUserByIDHandler)
-})
+    userService.getUserByID(userID, getUserByIDServiceHandler)
+}
 
-// create new user
-router.post("/", (req, res) => 
-{
+router.get("/:userID", getUserByIDHandler)
+//#endregion get user by id
+
+
+//#region create user
+const createUserHandler = (req, res) => {
     const userProps = req.body
-    const createUserHandler = (err, result) => {
-        if(result) {
-            res.status(201).json(result)
+    const createUserServiceHandler = (err, user) => {
+        if(!user) {
+            res.status(400).send({error: `error creating new user \n${err.message}`})
+            return
         }
-        else {
-            res.status(400).send(`error creating new user \n${err.message}`)
-        }
+
+        res.status(201).json(user)
     }
 
-    userService.createUser(userProps, createUserHandler)
-})
+    userService.createUser(userProps, createUserServiceHandler)
+}
 
-// update user by id
-router.put("/:userID", (req, res) => {
+router.post("/", createUserHandler)
+//#endregion create user
+
+
+//#region update user by id
+const updateUserByIDHandler = (req, res) => {
     const userID = req.url.split('/')[1]
     const updatedUserProps = req.body
-    const updateUserHandler = (err, result) => {
-        if(result) {
-            res.json(result)
+    const updateUserServiceHandler = (err, user) => {
+        if(!user) {
+            res.send({error: `error updating user \n${err.message}`})
+            return
         }
-        else {
-            res.send(`error updating user \n${err.message}`)
-        }
+
+        res.json(user)
     }
 
-    userService.updateUser(userID, updatedUserProps, updateUserHandler)
-})
+    userService.updateUser(userID, updatedUserProps, updateUserServiceHandler)
+}
 
-// delete user
-router.delete("/:userID", (req, res) => {
+router.put("/:userID", updateUserByIDHandler)
+//#endregion update user by id
+
+
+//#region delete user
+const deleteUserHandler = (req, res) => {
     const userID = req.url.split('/')[1]
-    const deleteUserHandler = (err, result) => {
-        if(result) {
-            res.json(result)
+    const deleteUserServiceHandler = (err, user) => {
+        if(!user) {
+            res.send({error: `error deleting user \n${err.message}`})
+            return
         }
-        else {
-            res.send(`error deleting user \n${err.message}`)
-        }
+
+        res.json(user)
     }
 
-    userService.deleteUser(userID, deleteUserHandler)
-})
+    userService.deleteUser(userID, deleteUserServiceHandler)
+}
+
+router.delete("/:userID", deleteUserHandler)
+//#endregion delete user
 
 
 

@@ -1,5 +1,6 @@
 const mongoose = require("mongoose")
 const config = require("config")
+const userService = require("../endpoints/user/UserService")
 
 let db
 
@@ -23,6 +24,25 @@ const initDB = (callback) => {
         db.on("error", console.error.bind(console, "connection error:"))
         db.once("open", () => {
             console.log("connected to db:        " + connectionString)
+            
+            const adminUserID = 'admin'
+            const getUserHandler = (getErr, getResult) => {
+                if(getErr) {
+                    const createAdminHandler = (createErr, createResult) => {
+                        if(createErr) {
+                            console.log(`error creating admin: \n${createErr.message}`)
+                        }
+                    }
+
+                    userService.createDefaultAdmin(createAdminHandler)
+                }
+                else {
+                    console.log('dont create default admin account because he already exists')
+                }
+            }
+
+            userService.getUserByID(adminUserID, getUserHandler)
+
             callback(null, db) // no return needed because there is no code after this that has to be executed
         })
     }

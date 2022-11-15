@@ -1,0 +1,129 @@
+###
+# @name loginAdminCorrect
+GET http://localhost/api/authenticate
+Authorization: Basic YWRtaW46MTIz
+
+@adminToken = {{loginAdminCorrect.response.headers.Authorization}}
+// YWRtaW46MTIz = <userID>:<password>
+// Login mit Basic Authentication als admin mit korrekten Credentials admin:123
+###
+
+###
+# @name loginManfredCorrect
+GET http://localhost/api/authenticate
+Authorization: Basic manfred:asdf
+
+@manfredToken = {{loginManfredCorrect.response.headers.Authorization}}
+// Login mit Basic Authentication als manfred mit korrekten Credentials
+###
+
+
+
+### 
+http://localhost/api/users
+Authorization: {{adminToken}}
+//Auflisten aller Nutzer mit Token von admin
+###
+
+### 
+GET http://localhost/api/users
+Authorization: {{manfredToken}}
+//Auflisten aller Nutzer mit Token von manfred, das sollte nicht möglich sein
+###
+
+
+
+### 
+POST http://localhost/api/users
+Authorization: {{adminToken}}
+Content-Type: application/json
+
+{
+    "userID": "manfred",
+    "firstName": "Manfred",
+    "lastName": "Mustermann",
+    "password": "asdf"
+}
+//Lege neuen user manfred an
+###
+
+
+
+### 
+GET http://localhost/api/users/manfred
+Authorization: {{adminToken}}
+//Abrufen des angelegten Users mit dem Admin-Token
+###
+
+### 
+GET http://localhost/api/users/admin
+Authorization: {{adminToken}}
+//Abrufen des Users mit dem Admin-Token
+###
+
+### 
+GET http://localhost/api/users/manfred
+Authorization: {{manfredToken}}
+//Abrufen des angelegten Users mit dem manfred-Token
+###
+
+### 
+GET http://localhost/api/users/admin
+Authorization: {{manfredToken}}
+//Abrufen des angelegten Users mit dem manfred-Token
+###
+
+
+
+###
+PUT http://localhost/api/users/manfred
+Content-Type: application/json
+Authorization: {{adminToken}}
+
+{
+    "firstName": "Sandra",
+    "lastName": "Meier"
+}
+// Ändere beim zweiten User den User-Name. Zur Selektion des Users verwende die userID.
+###
+
+
+
+###
+DELETE  http://localhost/api/users/admin
+Authorization: {{adminToken}}
+// Lösche den User mit der User-ID manfred
+###
+
+###
+DELETE  http://localhost/api/users/manfred
+Authorization: {{adminToken}}
+// Lösche den User mit der User-ID manfred
+###
+
+###
+DELETE  http://localhost/api/users/admin
+Authorization: {{manfredToken}}
+// Lösche den User mit der User-ID manfred
+###
+
+###
+DELETE  http://localhost/api/users/manfred
+Authorization: {{manfredToken}}
+// Lösche den User mit der User-ID manfred
+###
+
+
+
+###
+GET http://localhost/api/authenticate
+Authorization: Basic admin:asdf
+
+// Hinweis: Der REST-Client überführt das Passwort automatisch nach Base64
+// Login mit Basic Authentication als admin mit falschen Credentials
+###
+
+### 
+http://localhost/api/users
+//Auflisten aller Nutzer, ohne dass ein Token übergeben wird --> Anfrage scheitert mit 401 
+###

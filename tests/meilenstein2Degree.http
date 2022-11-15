@@ -1,0 +1,96 @@
+###
+# @name loginAdminCorrect
+GET http://localhost/api/authenticate
+Authorization: Basic YWRtaW46MTIz
+
+@adminToken = {{loginAdminCorrect.response.headers.Authorization}}
+// YWRtaW46MTIz = <userID>:<password>
+// Login mit Basic Authentication als admin mit korrekten Credentials admin:123
+###
+
+
+
+### 
+GET http://localhost/api/degreeCourses
+Authorization: {{adminToken}}
+//Auflisten aller Studiengänge
+###
+
+
+
+###
+# @name createDegreeCourseRequest
+POST http://127.0.0.1/api/degreeCourses
+Authorization: {{adminToken}}
+Content-Type: application/json
+
+{
+    "universityName": "Beuth Hochschule für Technik Berlin",
+    "universityShortName": "Beuth HS",
+    "departmentName": "Informatik und Medien",
+    "departmentShortName": "FB VI",
+    "name": "Orchideenzucht Bachelor",
+    "shortName": "OZ-BA"
+}
+// Lege einen Studiengang an
+###
+
+###
+# @name createDegreeCourseRequest2
+POST http://127.0.0.1/api/degreeCourses
+Authorization: {{adminToken}}
+Content-Type: application/json
+
+{
+    "universityName": "Beuth Hochschule für Technik Berlin",
+    "universityShortName": "HTW HS kjlkhkjhkjhkhjkh",
+    "departmentName": "Informatik und Medien",
+    "departmentShortName": "FB VI",
+    "name": "Orchideenzucht Bachelor",
+    "shortName": "OZ-BA"
+}
+// Lege einen Studiengang an
+###
+
+
+
+###
+@degreeCourseID = {{createDegreeCourseRequest.response.body.id}}
+###
+
+
+
+### 
+http://localhost/api/degreeCourses/{{degreeCourseID}}
+Authorization: {{adminToken}}
+//Abrufen von dem angelegten Studiengang
+###
+
+
+
+### 
+PUT http://localhost/api/degreeCourses/{{degreeCourseID}}
+Authorization: {{adminToken}}
+Content-Type: application/json
+
+{
+    "name": "Tulpenzucht"
+}
+//Ändere den Namen des Studiengangs
+###
+
+
+
+### 
+GET http://localhost/api/degreeCourses?universityShortName=Beuth HS
+Authorization: {{adminToken}}
+//Auflisten der Studiengänge einer bestimmten Hochschule
+###
+
+
+
+### 
+DELETE http://localhost/api/degreeCourses/{{degreeCourseID}}
+Authorization: {{adminToken}}
+//Lösche den angelegten Studiengang
+###

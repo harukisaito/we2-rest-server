@@ -6,6 +6,9 @@ const database = require("./database/db")
 
 // routes
 const publicUserRoutes = require("./endpoints/user/PublicUserRoute")
+const authenticationRoute = require("./endpoints/authentication/AuthenticationRoute")
+const userRoutes = require("./endpoints/user/UserRoute")
+const courseRoutes = require("./endpoints/degreeCourses/CourseRoute")
 
 // create express app
 const app = express()
@@ -23,6 +26,9 @@ startServer()
 
 function setRoutes () {
     app.use("/api/publicUsers", publicUserRoutes)
+    app.use("/api/authenticate", authenticationRoute)
+    app.use("/api/users", userRoutes)
+    app.use("/api/degreeCourses", courseRoutes)
 }
 
 function initializeDatabase () {
