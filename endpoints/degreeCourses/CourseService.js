@@ -65,18 +65,13 @@ const getCourseByID = (courseID, callback) => {
 
 
 // #region create course
-const createCourse = (courseID, props, callback) => {
-    const courseObj = {id: courseID}
+const createCourse = (props, callback) => {
     const name = props.name
     const shortName = props.shortName
     const departmentName = props.departmentName
     const departmentShortName = props.departmentShortName
     const universityName = props.universityName
     const universityShortName = props.universityShortName
-
-    if(courseID == null) {
-        return callback({message: 'course ID is missing'}, null)
-    }
 
     const saveCourse = (err, course) => {
         if(err) {
@@ -90,7 +85,6 @@ const createCourse = (courseID, props, callback) => {
 
     const createCourseService = () => {
         const course = new Course({
-            id: courseID,
             name: name,
             shortName: shortName,
             departmentName: departmentName,
@@ -102,20 +96,7 @@ const createCourse = (courseID, props, callback) => {
         course.save(saveCourse)
     }
 
-    const findCourse = (err, course) => {
-        if(err) {
-            return callback(err, null)
-        }
-        if(course) { // already exists
-            let msg = `course '${name}' already exists`
-            console.log(msg)
-            return callback({message: msg}, null)
-        }
-        
-        createCourseService()
-    }
-
-    Course.findOne(courseObj, findCourse)
+    createCourseService()
 }   
 // #endregion create course
 

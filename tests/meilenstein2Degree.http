@@ -42,12 +42,12 @@ Authorization: {{adminToken}}
 Content-Type: application/json
 
 {
-    "universityName": "Beuth Hochschule für Technik Berlin",
+    "universityName": "Beuth Hochschule für Technik Berlinasdf",
     "universityShortName": "HTW HS kjlkhkjhkjhkhjkh",
-    "departmentName": "Informatik und Medien",
-    "departmentShortName": "FB VI",
-    "name": "Orchideenzucht Bachelor",
-    "shortName": "OZ-BA"
+    "departmentName": "Informatik und Medienasdf",
+    "departmentShortName": "FB VIasdf",
+    "name": "Orchideenzucht Bachelorasdf",
+    "shortName": "OZ-BAasdf"
 }
 // Lege einen Studiengang an
 ###
@@ -55,7 +55,7 @@ Content-Type: application/json
 
 
 ###
-@degreeCourseID = {{createDegreeCourseRequest.response.body.id}}
+@degreeCourseID = {{createDegreeCourseRequest.response.body._id}}
 ###
 
 

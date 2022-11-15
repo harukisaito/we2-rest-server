@@ -80,7 +80,6 @@ router.get("/:courseID", isAuthenticated, isAdmin, getCourseByID)
 //#region create course
 const createCourse = (req, res) => {
     console.log('\nstart: create course process')
-    const courseID = "id" + Math.random().toString(16).slice(2)
     const courseProps = req.body
     const createCourseService = (err, course) => {
         if(!course) {
@@ -94,7 +93,7 @@ const createCourse = (req, res) => {
         res.status(201).send(course)
     }
 
-    courseService.createCourse(courseID, courseProps, createCourseService)
+    courseService.createCourse(courseProps, createCourseService)
 }
 
 router.post("/", isAuthenticated, isAdmin, createCourse)
