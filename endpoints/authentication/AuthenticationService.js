@@ -44,7 +44,7 @@ const createSessionToken = (userCredentials, callback) => {
         user.comparePassword(password, comparePasswordHandler)
     }
     
-    userService.getUserByID(userID, getUserHandler)
+    userService.getUserByID(userID, userID, getUserHandler)
 }
 
 module.exports = {

@@ -40,10 +40,10 @@ const getCoursesByUniName = (uniName, callback) => {
 // #region get course by id
 const getCourseByID = (courseID, callback) => {
     if(!courseID) {
-        return callback({message: "user id is missing"})
+        return callback({message: "course id is missing"})
     }
 
-    const courseObj = {id: courseID}
+    const courseObj = {_id: courseID}
     const findCourse = (err, course) => {
         if(err) {
             console.log(`error while searching for course '${courseID}' \n${err}`)
@@ -103,7 +103,7 @@ const createCourse = (props, callback) => {
 
 // #region update course
 const updateCourseByID = (courseID, props, callback) => {
-    const courseObj = {id: courseID}
+    const courseObj = {_id: courseID}
     const saveCourse = (err, course) => {
         if(err) {
             console.log(`error updating course: '${courseID}' \n${err}`)
@@ -146,7 +146,7 @@ const updateCourseByID = (courseID, props, callback) => {
 // #region delete course 
 const deleteCourse = (courseID, callback) => 
 {
-    const courseObj = {id: courseID}
+    const courseObj = {_id: courseID}
     const findAndRemoveCourse = (err, course) => {
         if(err) {
             console.log(`error deleting course: '${courseID}' \n${err}`)

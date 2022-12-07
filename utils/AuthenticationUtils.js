@@ -63,7 +63,7 @@ const isAdmin = (req, res, next) => {
         return next()
     }
 
-    userService.getUserByID(userID, getUserHandler) 
+    userService.getUserByID(userID, userID, getUserHandler) 
 }
 
 module.exports = {

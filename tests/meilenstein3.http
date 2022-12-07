@@ -1,0 +1,130 @@
+###
+# @name loginAdminCorrect
+GET https://localhost/api/authenticate
+Authorization: Basic YWRtaW46MTIz
+
+@adminToken = {{loginAdminCorrect.response.headers.Authorization}}
+// Login mit Basic Authentication mit korrekten Credentials admin:123
+###
+
+
+###
+# @name loginManfredCorrect
+GET https://localhost/api/authenticate
+Authorization: Basic manfred:asdf
+
+@manfredToken = {{loginManfredCorrect.response.headers.Authorization}}
+// Login mit Basic Authentication als manfred mit korrekten Credentials
+###
+
+
+
+//
+### Auflisten aller Studiengänge
+GET https://localhost/api/degreeCourses
+Authorization: {{adminToken}}
+
+
+
+//
+### Auflisten aller Studiengänge
+GET https://localhost/api/degreeCourseApplications
+Authorization: {{adminToken}}
+
+
+// Lege einen Studiengang an
+###
+# @name createDegreeCourseRequest
+POST https://127.0.0.1/api/degreeCourses
+Authorization: {{adminToken}}
+Content-Type: application/json
+
+{
+    "universityName": "Beuth Hochschule für Technik Berlin",
+    "universityShortName": "Beuth HS",
+    "departmentName": "Informatik und Medien",
+    "departmentShortName": "FB VI",
+    "name": "Orchideenzucht Bachelor",
+    "shortName": "OZ-BA"
+}
+
+
+
+###
+@degreeCourseID = {{createDegreeCourseRequest.response.body.id}}
+
+
+
+### Studienbewerbungen für manfred auflisten (es sollte 0 sein)
+GET https://localhost/api/degreeCourseApplications/myApplications
+Authorization: {{manfredToken}}
+
+
+
+// Studienbewerbung für Manfred anlegen
+###
+# @name createApplicationRequest
+POST https://localhost/api/degreeCourseApplications
+Authorization: {{manfredToken}}
+Content-Type: application/json
+
+{
+    "courseDegreeID": "{{degreeCourseID}}",
+    "year": 2024,
+    "targetPeriodShortName": "WiSe"
+}
+###
+@applicationID = {{createApplicationRequest.response.body.id}}
+
+
+
+### Studienbewerbungen für manfred auflisten (es sollte 1 sein)
+GET https://localhost/api/degreeCourseApplications/myApplications
+Authorization: {{manfredToken}}
+
+
+
+### Der Admin sucht nach Bewerbungen von Manfred
+GET https://localhost/api/degreeCourseApplications?applicantUserID=manfred
+Authorization: {{adminToken}}
+
+### Auflisten der Bewerbungen für einen Studiengang
+GET https://localhost/api/degreeCourseApplications?courseDegreeID={{degreeCourseID}}
+Authorization: {{adminToken}}
+
+###
+// Anlegen einer Bewerbung für einen Studiengang, den es nicht gibt, Es sollte eine Fehlermeldung geben
+POST https://localhost/api/degreeCourseApplications
+Authorization: {{manfredToken}}
+Content-Type: application/json
+
+{
+    "courseDegreeID": "gibt es nicht",
+    "year": 2024,
+    "targetPeriodShortName": "WiSe"
+}
+
+### Nachgelagerte Suche für Studienbewerbungen
+GET https://localhost/api/degreeCourses/{{degreeCourseID}}/degreeCourseApplications
+Authorization: {{adminToken}}
+
+### Ändere das Bewerbungsjahr in der existierenden Bewerbung
+PUT https://localhost/api/degreeCourseApplications/{{applicationID}}
+Authorization: {{adminToken}}
+Content-Type: application/json
+
+{
+    "year": 2025
+}
+
+### Löschen von der Bewerbung
+DELETE  https://localhost/api/degreeCourseApplications/{{applicationID}}
+Authorization: {{adminToken}}
+
+### Löschen des Studiengangs
+DELETE  https://localhost/api/degreeCourses/{{degreeCourseID}}
+Authorization: {{adminToken}}
+
+### Löschen des Users
+DELETE  https://localhost/api/users/manfred
+Authorization: {{adminToken}}

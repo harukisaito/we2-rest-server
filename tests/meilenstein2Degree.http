@@ -1,6 +1,6 @@
 ###
 # @name loginAdminCorrect
-GET http://localhost/api/authenticate
+GET https://localhost/api/authenticate
 Authorization: Basic YWRtaW46MTIz
 
 @adminToken = {{loginAdminCorrect.response.headers.Authorization}}
@@ -11,7 +11,7 @@ Authorization: Basic YWRtaW46MTIz
 
 
 ### 
-GET http://localhost/api/degreeCourses
+GET https://localhost/api/degreeCourses
 Authorization: {{adminToken}}
 //Auflisten aller Studiengänge
 ###
@@ -20,7 +20,7 @@ Authorization: {{adminToken}}
 
 ###
 # @name createDegreeCourseRequest
-POST http://127.0.0.1/api/degreeCourses
+POST https://127.0.0.1/api/degreeCourses
 Authorization: {{adminToken}}
 Content-Type: application/json
 
@@ -55,13 +55,13 @@ Content-Type: application/json
 
 
 ###
-@degreeCourseID = {{createDegreeCourseRequest.response.body._id}}
+@degreeCourseID = {{createDegreeCourseRequest.response.body.id}}
 ###
 
 
 
 ### 
-http://localhost/api/degreeCourses/{{degreeCourseID}}
+https://localhost/api/degreeCourses/{{degreeCourseID}}
 Authorization: {{adminToken}}
 //Abrufen von dem angelegten Studiengang
 ###

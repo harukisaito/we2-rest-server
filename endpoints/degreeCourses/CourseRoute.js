@@ -22,17 +22,28 @@ const getAllCourses = (req, res) => {
     const getAllCoursesService = (err, courses) => {
         if(err) {
             console.log('finish: get all courses')
-            res.status(404).send({error: `error getting users: ${err.message}`})
+            res.status(404).send({error: `error getting courses: ${err.message}`})
             return            
         }
         if(!courses) {
             console.log('finish: get all courses')
-            res.status(404).send({error: `error getting users: ${err.message}`})
+            res.status(404).send({error: `error getting courses: ${err.message}`})
             return            
         }
         
+        const modifiedCourses = courses.map((course) => {
+            return {
+                id: course._id,
+                name: course.name,
+                shortName: course.shortName,
+                universityShortName: course.universityShortName,
+                departmentName: course.departmentName,
+                departmentShortName: course.departmentShortName
+            }
+        })
+        
         console.log('finish: get all courses')
-        res.send(Object.values(courses))
+        res.send(modifiedCourses)
     }
 
     // get courses by uni name
@@ -65,9 +76,18 @@ const getCourseByID = (req, res) => {
             console.log('finish: get course by id process')
             return
         }
+
+        const modifiedCourse =  {
+            id: course._id,
+            name: course.name,
+            shortName: course.shortName,
+            universityShortName: course.universityShortName,
+            departmentName: course.departmentName,
+            departmentShortName: course.departmentShortName
+        }
         
         console.log('finish: get course by id process')
-        res.send(course)
+        res.send(modifiedCourse)
     }
     
     courseService.getCourseByID(courseID, getCourseByIDService)
@@ -88,9 +108,18 @@ const createCourse = (req, res) => {
             return
         }
 
-        console.log(`created course: '${course.name}'`)
+        const modifiedCourse =  {
+            id: course._id,
+            name: course.name,
+            shortName: course.shortName,
+            universityShortName: course.universityShortName,
+            departmentName: course.departmentName,
+            departmentShortName: course.departmentShortName
+        }
+
+        console.log(`created course: '${modifiedCourse.name}'`)
         console.log('finish: create course process')
-        res.status(201).send(course)
+        res.status(201).send(modifiedCourse)
     }
 
     courseService.createCourse(courseProps, createCourseService)
@@ -119,11 +148,19 @@ const updateCourseByID = (req, res) => {
             return
         }
 
+        const modifiedCourse =  {
+            id: course._id,
+            name: course.name,
+            shortName: course.shortName,
+            universityShortName: course.universityShortName,
+            departmentName: course.departmentName,
+            departmentShortName: course.departmentShortName
+        }
+
         console.log('finish: update course')
-        res.status(201).send(course)
+        res.status(201).send(modifiedCourse)
     }
 
-    // check if user is admin 
     courseService.updateCourseByID(courseID, props, updateCourseService)
 }
 
@@ -131,7 +168,7 @@ router.put("/:courseID", isAuthenticated, isAdmin, updateCourseByID)
 //#endregion update course by id
 
 
-//#region delete course
+//#region delete courses
 const deleteCourse = (req, res) => {
     console.log('\nstart: delete course process')
     
@@ -148,8 +185,17 @@ const deleteCourse = (req, res) => {
             return
         }
 
+        const modifiedCourse =  {
+            id: course._id,
+            name: course.name,
+            shortName: course.shortName,
+            universityShortName: course.universityShortName,
+            departmentName: course.departmentName,
+            departmentShortName: course.departmentShortName
+        }
+
         console.log('finish: delete course process')
-        res.status(201).send(course)
+        res.status(201).send(modifiedCourse)
     }
 
     courseService.deleteCourse(courseID, deleteCourseService)

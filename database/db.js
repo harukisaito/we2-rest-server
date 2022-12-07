@@ -41,7 +41,7 @@ const initDB = (callback) => {
                 }
             }
 
-            userService.getUserByID(adminUserID, getUserHandler)
+            userService.getUserByID(adminUserID, adminUserID, getUserHandler)
 
             callback(null, db) // no return needed because there is no code after this that has to be executed
         })

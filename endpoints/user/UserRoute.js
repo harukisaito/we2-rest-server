@@ -18,24 +18,18 @@ const getAllUsers = (req, res) => {
             return            
         }
 
-        let counter = 0
-        let modifiedUsers = []
-
-        for(let user of users) {
-            const userToSend = {
-                _id: user._id,
+        const modifiedUsers = users.map((user) => {
+            return {
+                id: user._id,
                 userID: user.userID,
                 firstName: user.firstName,
                 lastName: user.lastName,
                 isAdministrator: user.isAdministrator
             }
-            
-            modifiedUsers[counter] = userToSend
-            counter++
-        }
-        
+        })
+
         console.log('finish: get all users')
-        res.send(Object.values(modifiedUsers))
+        res.send(modifiedUsers)
     }
 
     userService.getUsers(getAllUsersService)
@@ -64,7 +58,7 @@ const getUserByID = (req, res) => {
         }
         
         const userToSend = {
-            _id: user._id,
+            id: user._id,
             userID: user.userID,
             firstName: user.firstName,
             lastName: user.lastName,
@@ -75,27 +69,7 @@ const getUserByID = (req, res) => {
         res.send(userToSend)
     }
 
-    const checkIfAdmin = (err, userSearching) => {
-        if(err) {
-            res.send({error: `Error while trying to identify admin rights for user: ${userIDSearching}`})
-            return
-        }
-        // users can only get themselves
-        // admins can get all users by id
-        if(!userSearching.isAdministrator) {
-            if(userIDSearching !== userIDToBeSearched) {
-                res.status(401).send({error: `Not authorized to access user: '${userIDToBeSearched}`})
-                return
-            }
-        }
-        
-        console.log('searching user is admin')
-        userService.getUserByID(userIDToBeSearched, getUserByIDService)
-    }
-
-    
-    // check if user is admin 
-    userService.getUserByID(userIDSearching, checkIfAdmin)
+    userService.getUserByID(userIDSearching, userIDToBeSearched, getUserByIDService)
 }
 
 router.get("/:userID", isAuthenticated, getUserByID)
@@ -114,7 +88,7 @@ const createUser = (req, res) => {
         }
 
         const userToSend = {
-            _id: user._id,
+            id: user._id,
             userID: user.userID,
             firstName: user.firstName,
             lastName: user.lastName,
@@ -139,20 +113,13 @@ const updateUserByID = (req, res) => {
 
     const userIDToBeUpdated = req.params.userID
     const userIDUpdating = req.userID
-    const firstName = req.body.firstName
-    const lastName = req.body.lastName
-    const isAdministrator = req.body.isAdministrator
-    
-    const updatedUserPropsIfAdmin = {
-        firstName: firstName,
-        lastName: lastName,
-        isAdministrator: isAdministrator
-    }
-    const updatedUserPropsIfUser = {
-        firstName: firstName,
-        lastName: lastName
-    }
 
+    const userProps = {
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        isAdministrator: req.body.isAdministrator
+    }
+    
     const updateUserService = (err, user) => {
         if(!user) {
             console.log('finish: update user')
@@ -161,7 +128,7 @@ const updateUserByID = (req, res) => {
         }
 
         const userToSend = {
-            _id: user._id,
+            id: user._id,
             userID: user.userID,
             firstName: user.firstName,
             lastName: user.lastName,
@@ -172,31 +139,7 @@ const updateUserByID = (req, res) => {
         res.status(201).send(userToSend)
     }
 
-    const checkIfAdmin = (err, userUpdating) => {
-        if(err) {
-            console.log('finish: update user')
-            res.send({error: `Error while trying to identify admin rights for user: ${userIDUpdating}`})
-            return
-        }
-        if(!userUpdating.isAdministrator) {
-            // users can only update themselves and limited information
-            if(userIDUpdating !== userIDToBeUpdated) {
-                console.log('finish: update user')
-                res.status(401).send({error: `Not authorized to access user: '${userIDToBeUpdated}`})
-                return
-            }
-
-            userService.updateUser(userIDToBeUpdated, updatedUserPropsIfUser, updateUserService)
-            return
-        }
-
-        console.log('updating user is admin')
-        // admins can update all users and more information
-        userService.updateUser(userIDToBeUpdated, updatedUserPropsIfAdmin, updateUserService)
-    }
-
-    // check if user is admin 
-    userService.getUserByID(userIDUpdating, checkIfAdmin)
+    userService.updateUser(userIDUpdating, userIDToBeUpdated, userProps, updateUserService)
 }
 
 router.put("/:userID", isAuthenticated, updateUserByID)
@@ -220,7 +163,7 @@ const deleteUser = (req, res) => {
         }
 
         const userToSend = {
-            _id: user._id,
+            id: user._id,
             userID: user.userID,
             firstName: user.firstName,
             lastName: user.lastName,
@@ -236,7 +179,6 @@ const deleteUser = (req, res) => {
 
 router.delete("/:userID", isAuthenticated, isAdmin, deleteUser)
 //#endregion delete user
-
 
 
 module.exports = router

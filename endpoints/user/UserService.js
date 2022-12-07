@@ -19,28 +19,57 @@ const getUsers = (callback) => {
 
 
 // #region get user by id
-const getUserByID = (userID, callback) => {
-    if(!userID) {
-        return callback({message: "user id is missing"})
+const getUserByID = (userIDSearching, userIDToBeSearched, callback) => {
+    if(!userIDToBeSearched) {
+        return callback({message: "user id to be searched is missing"})
+    }
+    if(!userIDSearching) {
+        return callback({message: "user id that is searching is missing"})
     }
 
-    const userObj = {userID: userID}
+    // console.log(userIDToBeSearched)
+    // console.log(userIDSearching)
+
+    const userObjSearching = {userID: userIDSearching}
+    const userObjToBeSearched = {userID: userIDToBeSearched}
+
     const findUser = (err, user) => {
         if(err) {
-            console.log(`error while searching for user '${userID}' \n${err}`)
+            console.log(`error while searching for user '${userIDToBeSearched}' \n${err}`)
             return callback(err, null)
         }
         if(!user) {
-            const msg = `could not find user: '${userID}'`
+            const msg = `could not find user: '${userIDToBeSearched}'`
             console.log(msg);
             return callback({message: msg}, null)
         }
 
-        console.log(`found user: '${userID}'`)
+        console.log(`found user: '${userIDToBeSearched}'`)
         callback(null, user)
     }
 
-    User.findOne(userObj, findUser)
+    const checkForRights = (err, user) => {
+        if(err) {
+            console.log(`error while searching for user '${userIDToBeSearched}' \n${err}`)
+            return callback(err, null)
+        }
+        if(!user) {
+            const msg = `could not find user: '${userIDToBeSearched}'`
+            console.log(msg);
+            return callback({message: msg}, null)
+        }
+        if(!user.isAdministrator && userIDToBeSearched !== userIDSearching) {
+            const msg = 'user is not allowed to get another user'
+            console.log(msg)
+            return callback({message: msg}, null)
+        }
+
+        console.log('got through the rights check')
+        User.findOne(userObjToBeSearched, findUser)
+    }
+
+    // check for rights first
+    User.findOne(userObjSearching, checkForRights)
 }
 // #endregion get user by id
 
@@ -118,27 +147,41 @@ const createDefaultAdmin = (callback) => {
 
 
 // #region update user
-const updateUser = (userID, props, callback) => {
-    const userObj = {userID: userID}
+const updateUser = (userIDUpdating, userIDToBeUpdated, props, callback) => {
+
+    let updatingUserIsAdmin
+    const userObjUpdating = {userID: userIDUpdating}
+    const userObjToBeUpdated = {userID: userIDToBeUpdated}
+
+
     const saveUser = (err, user) => {
         if(err) {
-            console.log(`error updating user: '${userID}' \n${err}`)
+            console.log(`error updating user: '${userIDToBeUpdated}' \n${err}`)
             return callback(err, null)
         }
         if(!user) {
-            let msg = `could not save user: '${userID}' while updating`
+            let msg = `could not save user: '${userIDToBeUpdated}' while updating`
             console.log(msg)
             return callback({message: msg}, null)
         }
 
-        console.log(`updated user '${userID}'`)
+        console.log(`updated user '${userIDToBeUpdated}'`)
         return callback(null, user)
     } 
 
     const updateAndSafeUser = (user) => {
-        Object.assign(user, props)
+        const modifiedProps = {
+            firstName: props.firstName,
+            lastName: props.lastName,
+        }
 
-        // console.log(user)
+        if(!updatingUserIsAdmin) {
+            Object.assign(user, modifiedProps)
+        }
+        else {
+            Object.assign(user, props)
+        }
+
         user.save(saveUser)
     }
 
@@ -148,17 +191,39 @@ const updateUser = (userID, props, callback) => {
             return callback(err, null)
         }
         if(!user) {
-            let msg = `user: '${userID}' does not exist`
+            let msg = `user: '${userIDToBeUpdated}' does not exist`
             console.log(msg)
             return callback({message: msg}, null)
         }
 
-        // console.log(user)
-
         updateAndSafeUser(user)
     }
 
-    User.findOne(userObj, findAndUpdateUser)
+    const checkForRights = (err, user) => {
+        if(err) {
+            console.log(`error while updating for user '${userIDToBeUpdated}' \n${err}`)
+            return callback(err, null)
+        }
+        if(!user) {
+            const msg = `could not find user: '${userIDToBeUpdated}'`
+            console.log(msg);
+            return callback({message: msg}, null)
+        }
+        if(!user.isAdministrator && userIDToBeUpdated !== userIDUpdating) {
+            const msg = 'user is not allowed to update another user'
+            console.log(msg)
+            return callback({message: msg}, null)
+        }
+        if(user.isAdministrator) {
+            updatingUserIsAdmin = true
+        }
+
+        console.log('got through the rights check')
+        User.findOne(userObjToBeUpdated, findAndUpdateUser)
+    }
+
+    // check for rights first
+    User.findOne(userObjUpdating, checkForRights)
 } 
 // #endregion update User
 

@@ -1,0 +1,37 @@
+###
+# @name loginAdminCorrect
+GET https://localhost/api/authenticate
+Authorization: Basic YWRtaW46MTIz
+
+@adminToken = {{loginAdminCorrect.response.headers.Authorization}}
+// YWRtaW46MTIz = <userID>:<password>
+// Login mit Basic Authentication als admin mit korrekten Credentials admin:123
+###
+
+### 
+POST https://localhost/api/users
+Authorization: {{adminToken}}
+Content-Type: application/json
+
+{
+    "userID": "manfred",
+    "firstName": "Manfred",
+    "lastName": "Mustermann",
+    "password": "asdf"
+}
+//Lege neuen user manfred an
+###
+
+###
+# @name loginManfredCorrect
+GET https://localhost/api/authenticate
+Authorization: Basic manfred:asdf
+
+@manfredToken = {{loginManfredCorrect.response.headers.Authorization}}
+// Login mit Basic Authentication als manfred mit korrekten Credentials
+###
+
+### 
+GET https://localhost/api/abnahme/getMyData
+Authorization: {{manfredToken}}
+###

@@ -1,6 +1,6 @@
 ###
 # @name loginAdminCorrect
-GET http://localhost/api/authenticate
+GET https://localhost/api/authenticate
 Authorization: Basic YWRtaW46MTIz
 
 @adminToken = {{loginAdminCorrect.response.headers.Authorization}}
@@ -10,7 +10,7 @@ Authorization: Basic YWRtaW46MTIz
 
 ###
 # @name loginManfredCorrect
-GET http://localhost/api/authenticate
+GET https://localhost/api/authenticate
 Authorization: Basic manfred:asdf
 
 @manfredToken = {{loginManfredCorrect.response.headers.Authorization}}
@@ -20,13 +20,13 @@ Authorization: Basic manfred:asdf
 
 
 ### 
-http://localhost/api/users
+https://localhost/api/users
 Authorization: {{adminToken}}
 //Auflisten aller Nutzer mit Token von admin
 ###
 
 ### 
-GET http://localhost/api/users
+GET https://localhost/api/users
 Authorization: {{manfredToken}}
 //Auflisten aller Nutzer mit Token von manfred, das sollte nicht möglich sein
 ###
@@ -34,7 +34,7 @@ Authorization: {{manfredToken}}
 
 
 ### 
-POST http://localhost/api/users
+POST https://localhost/api/users
 Authorization: {{adminToken}}
 Content-Type: application/json
 
@@ -50,25 +50,25 @@ Content-Type: application/json
 
 
 ### 
-GET http://localhost/api/users/manfred
+GET https://localhost/api/users/manfred
 Authorization: {{adminToken}}
 //Abrufen des angelegten Users mit dem Admin-Token
 ###
 
 ### 
-GET http://localhost/api/users/admin
+GET https://localhost/api/users/admin
 Authorization: {{adminToken}}
 //Abrufen des Users mit dem Admin-Token
 ###
 
 ### 
-GET http://localhost/api/users/manfred
+GET https://localhost/api/users/manfred
 Authorization: {{manfredToken}}
 //Abrufen des angelegten Users mit dem manfred-Token
 ###
 
 ### 
-GET http://localhost/api/users/admin
+GET https://localhost/api/users/admin
 Authorization: {{manfredToken}}
 //Abrufen des angelegten Users mit dem manfred-Token
 ###
@@ -76,13 +76,56 @@ Authorization: {{manfredToken}}
 
 
 ###
-PUT http://localhost/api/users/manfred
+PUT https://localhost/api/users/manfred
 Content-Type: application/json
 Authorization: {{adminToken}}
 
 {
     "firstName": "Sandra",
     "lastName": "Meier"
+}
+// Ändere beim zweiten User den User-Name. Zur Selektion des Users verwende die userID.
+###
+
+
+
+###
+PUT https://localhost/api/users/admin
+Content-Type: application/json
+Authorization: {{manfredToken}}
+
+{
+    "firstName": "Sandra",
+    "lastName": "Meier"
+}
+// Ändere beim zweiten User den User-Name. Zur Selektion des Users verwende die userID.
+###
+
+
+
+###
+PUT https://localhost/api/users/admin
+Content-Type: application/json
+Authorization: {{manfredToken}}
+
+{
+    "firstName": "Sandra",
+    "lastName": "Meier"
+}
+// Ändere beim zweiten User den User-Name. Zur Selektion des Users verwende die userID.
+###
+
+
+
+###
+PUT https://localhost/api/users/manfred
+Content-Type: application/json
+Authorization: {{adminToken}}
+
+{
+    "firstName": "Sandra",
+    "lastName": "Meier",
+    "isAdministrator": false
 }
 // Ändere beim zweiten User den User-Name. Zur Selektion des Users verwende die userID.
 ###
