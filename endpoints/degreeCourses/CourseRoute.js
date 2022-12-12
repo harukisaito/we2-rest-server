@@ -1,7 +1,11 @@
 const express = require("express")
 const router = express.Router()
+const subRouter = express.Router({mergeParams: true})
+
+router.use('/:courseID/degreeCourseApplications', subRouter)
 
 const courseService = require("./CourseService") 
+const applicationService = require("../degreeCourseApplications/CourseApplicationService")
 const authenticationUtils = require("../../utils/AuthenticationUtils")
 
 const isAuthenticated = authenticationUtils.isAuthenticated
@@ -95,6 +99,46 @@ const getCourseByID = (req, res) => {
 
 router.get("/:courseID", isAuthenticated, isAdmin, getCourseByID)
 //#endregion get course by id
+
+
+//#region get applications by course
+const yo = (req, res) => {
+    console.log('yo')
+    const courseID = req.params.courseID
+    
+    console.log(courseID)
+
+    const getAllApplicationsService = (err, applications) => {
+        if(err) {
+            console.log('finish: get all applications')
+            res.status(404).send({error: `error getting applications: ${err.message}`})
+            return            
+        }
+        if(!applications) {
+            console.log('finish: get all applications')
+            res.status(404).send({error: `error getting applications: ${err.message}`})
+            return            
+        }
+
+        const modifiedApplications = applications.map((application) => {
+            return {
+                id: application._id,
+                applicantUserID: application.applicantUserID,
+                degreeCourseID: application.degreeCourseID,
+                targetPeriodYear: application.targetPeriodYear,
+                targetPeriodShortName: application.targetPeriodShortName
+            }
+        })
+        
+        console.log('finish: get all applications')
+        res.send(Object.values(modifiedApplications))
+    }
+    
+    applicationService.getApplicationsByCourse(courseID, getAllApplicationsService)
+}
+
+subRouter.get("/", isAuthenticated, isAdmin, yo)
+//#endregion get applications by course
 
 
 //#region create course

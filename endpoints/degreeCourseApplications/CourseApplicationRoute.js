@@ -1,25 +1,21 @@
 const express = require("express")
 const router = express.Router()
 const subRouter = express.Router({mergeParams: true})
-// const subRouter2 = express.Router({mergeParams: true})
 
 const applicationService = require("./CourseApplicationService") 
-const userService = require("../user/UserService")
 const authenticationUtils = require("../../utils/AuthenticationUtils")
 
 const isAuthenticated = authenticationUtils.isAuthenticated
 const isAdmin = authenticationUtils.isAdmin
 
 router.use('/myApplications', subRouter)
-// router.use('/:degreeCourseID/degreeCourseApplications', subRouter2)
 
 
-//#region get all applications OR from course OR from user
+//#region get all applications OR from user
 const getAllApplications = (req, res) => {
     console.log('\nstart: get all applications')
     
     const searchQuery = req.query
-    const courseID = searchQuery.courseDegreeID
     const applicantUserID = searchQuery.applicantUserID
 
     const getAllApplicationsService = (err, applications) => {
@@ -48,12 +44,6 @@ const getAllApplications = (req, res) => {
         res.send(Object.values(modifiedApplications))
     }
 
-    // get applications by course
-    if(courseID !== undefined) {
-        applicationService.getApplicationsByCourse(courseID, getAllApplicationsService)
-        return
-    }
-
     // get applications by user id
     if(applicantUserID !== undefined) {
         applicationService.getApplicationsByUserID(applicantUserID, getAllApplicationsService)
@@ -65,45 +55,7 @@ const getAllApplications = (req, res) => {
 }
 
 router.get("/", isAuthenticated, isAdmin, getAllApplications)
-//#endregion get all applications OR from course OR from user
-
-
-// //#region get applications by course
-// const getAllApplicationsByCourse = () => {
-//     console.log('\nstart: get all applications by course')
-
-//     const courseID = searchQuery.degreeCourseID
-
-//     const getAllApplicationsService = (err, applications) => {
-//         if(err) {
-//             console.log('finish: get all applications by course')
-//             res.status(404).send({error: `error getting applications: ${err.message}`})
-//             return            
-//         }
-//         if(!applications) {
-//             console.log('finish: get all applications')
-//             res.status(404).send({error: `error getting applications: ${err.message}`})
-//             return            
-//         }
-
-//         const modifiedApplications = applications.map((application) => {
-//             return {
-//                 id: application._id,
-//                 applicantUserID: application.applicantUserID,
-//                 degreeCourseID: application.degreeCourseID,
-//                 targetPeriodYear: application.targetPeriodYear,
-//                 targetPeriodShortName: application.targetPeriodShortName
-//             }
-//         })
-        
-//         console.log('finish: get all applications by course')
-//         res.send(Object.values(modifiedApplications))
-//     }
-
-//     applicationService.getApplicationsByCourse(courseID, getAllApplicationsService)
-// }
-// subRouter2.get("/", isAuthenticated, isAdmin, getAllApplicationsByCourse)
-// //#endregion
+//#endregion get all applications OR from user
 
 
 //#region get application by id
